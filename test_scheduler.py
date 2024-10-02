@@ -13,10 +13,10 @@ def test_validate_history_good():
 
 def test_occupied_slots():
     availability = scheduler.load_availability('test/limitations.csv')
-    assert scheduler.occupied_slots(availability,"[COACH]Windu") == 6
+    assert scheduler.occupied_slots(availability,"[COACH]Windu") == 0
     
     history = scheduler.load_history('test/good_history.csv')
-    scheduler.assign_coaches(history, availability)
+    scheduler.assign_coaches(history, availability, 5)
 
     assert scheduler.occupied_slots(availability,"[COACH]Windu") == 3
 
@@ -24,7 +24,7 @@ def test_assign_coaches():
     history = scheduler.load_history('test/good_history.csv')
     availability = scheduler.load_availability('test/limitations.csv')
 
-    scheduler.assign_coaches(history, availability)
+    scheduler.assign_coaches(history, availability, 5)
 
     assert (availability['[COACH]Yoda'] == "Maul").any()
     assert (availability['Maul'] == "[COACH]Yoda").any()
@@ -54,16 +54,38 @@ def test_assign_coaches_coach_galore():
     history = scheduler.load_history('test/coach_ahoy_history.csv')
     availability = scheduler.load_availability('test/coach_ahoy_limits.csv')
 
-    scheduler.assign_coaches(history, availability)
+    scheduler.assign_coaches(history, availability, 6)
     
     assert (availability['[COACH]Yoda'] == "Luke").any()
     assert (availability['[COACH]Maul'] == "Luke").any()
     assert (availability['[COACH]Obi'] == "Luke").any()
     assert (availability['[COACH]Anakin'] == "Luke").any()
     assert (availability['[COACH]Windu'] == "Luke").any()
+    assert (availability['[COACH]Palp'] == "Luke").any()
 
     assert (availability['Luke'] == "[COACH]Yoda").any()
     assert (availability['Luke'] == "[COACH]Maul").any()
     assert (availability['Luke'] == "[COACH]Obi").any()
     assert (availability['Luke'] == "[COACH]Anakin").any()
     assert (availability['Luke'] == "[COACH]Windu").any()
+    assert (availability['Luke'] == "[COACH]Palp").any()
+
+def test_assign_coaches_coach_galore_maxed():
+    history = scheduler.load_history('test/coach_ahoy_history.csv')
+    availability = scheduler.load_availability('test/coach_ahoy_limits.csv')
+
+    scheduler.assign_coaches(history, availability, 5)
+
+    assert (availability['[COACH]Yoda'] == "Luke").any()
+    assert (availability['[COACH]Maul'] == "Luke").any()
+    assert (availability['[COACH]Obi'] == "Luke").any()
+    assert (availability['[COACH]Anakin'] == "Luke").any()
+    assert (availability['[COACH]Windu'] == "Luke").any()
+    assert not (availability['[COACH]Palp'] == "Luke").any()
+
+    assert (availability['Luke'] == "[COACH]Yoda").any()
+    assert (availability['Luke'] == "[COACH]Maul").any()
+    assert (availability['Luke'] == "[COACH]Obi").any()
+    assert (availability['Luke'] == "[COACH]Anakin").any()
+    assert (availability['Luke'] == "[COACH]Windu").any()
+    assert not (availability['Luke'] == "[COACH]Palp").any()

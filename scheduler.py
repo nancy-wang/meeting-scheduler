@@ -21,14 +21,15 @@ def match_slots(series_one, series_two):
     return available_slots.sample().index, True
 
 def occupied_slots(availability_df, fellow):
-    return len(availability_df[fellow][(availability_df[fellow] == "True") | (availability_df[fellow] == "False")])
+    total_slots = len(availability_df[fellow])
+    return total_slots - len(availability_df[fellow][(availability_df[fellow] == "True") | (availability_df[fellow] == "False")])
 
-def assign_coaches(history_df, availability_df):
+def assign_coaches(history_df, availability_df, max_meetings):
     coach_columns = availability_df.columns.str.startswith("[COACH]")
     for coach, _ in availability_df.loc[:, coach_columns].items():
         available_fellows = history_df[coach].loc[(history_df[coach] == "False") & ~coach_columns].index
         for fellow in available_fellows:
-            # if occupied_slots(availability_df, fellow) < MAX_MEETINGS:
+            if occupied_slots(availability_df, fellow) < max_meetings:
                 slot, found = match_slots(availability_df[coach], availability_df[fellow])
                 if found:
                     availability_df.loc[slot, coach] = fellow
@@ -53,9 +54,9 @@ def main():
 
     # print(history)
     # print(availability)
-    print("---")
+    # print("---")
 
-    assign_coaches(history, availability)
+    assign_coaches(history, availability, MAX_MEETINGS)
 
     # print(availability)
 
