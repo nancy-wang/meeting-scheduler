@@ -1,0 +1,8 @@
+NAME,Anakin,Luke,Obi,Maul,[COACH]Yoda,[COACH]Windu,Palp
+Anakin,X,,,,,,
+Luke,,X,,,,,
+Obi,,,X,,,,
+Maul,,,,X,,,
+[COACH]Yoda,,,,,X,,
+[COACH]Windu,,,,,,X,
+Palp,,,,,,,X
